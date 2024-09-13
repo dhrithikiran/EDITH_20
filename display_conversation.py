@@ -2,36 +2,57 @@ import cv2
 from fer import FER
 import time
 from collections import Counter
+import random
 
 # Define conversation starters
 conversation_starters = {
     'happy': [
-        "The person looks like he/she is happy, ask 'You seem in a good mood, tell me about it'",
-        "The person looks like he/she is enjoying the conversation, continue to talk to him/her"
+        "You seem in a good mood, tell me about it.",
+        "You look like you're enjoying yourself. What's the best part of your day?",
+        "I can see you're happy! What's something exciting that's happened recently?",
+        "You seem really cheerful! What's something that made you smile today?"
     ],
     'sad': [
-        "The person looks like he/she is sad, ask 'Something is bothering you, what happened? Tell me.'",
-        "The person looks like he/she is down in the dumps, try asking what's bothering them."
+        "Something seems to be bothering you. Want to talk about it?",
+        "You look a bit down. Is there anything on your mind?",
+        "I can see you're feeling sad. Is there anything I can do to help?",
+        "You appear to be feeling blue. Do you want to share what's troubling you?"
     ],
     'disgust': [
-        "The person looks like he/she didn't like what you just said, try to change the conversation or come out of it.",
-        "The person looks like he/she is offended by you, try to get out from there."
+        "It seems like something I said didn’t sit well with you. Should we change the topic?",
+        "You look a bit unsettled. Is there something you’d prefer to talk about instead?",
+        "You seem to be reacting strongly to what was just said. Let’s switch gears.",
+        "It looks like you're not enjoying this topic. What would you like to discuss?"
     ],
     'neutral': [
-        "The person looks like he/she is not expressing his emotions, try to start the conversation",
-        "The person looks like he/she is bored, try to spice up the conversation"
+        "You seem calm. What’s something exciting that happened to you recently?",
+        "No specific emotion detected. What’s your favorite song?",
+        "It looks like you’re feeling neutral. What classes did you have today?",
+        "You appear to be in a neutral state. What’s something you enjoy doing in your free time?"
     ],
     'surprise': [
-        "The person looks like he/she was taken aback by your speech, try to review your words and try again",
-        "The person looks like he/she was taken by surprise, try to ask why he made that expression"
+        "It looks like you were surprised. What was it that caught you off guard?",
+        "You seem taken aback. Did something unexpected happen?",
+        "I can see you were surprised. What’s something new or unexpected you’ve encountered recently?",
+        "You look amazed. What’s a recent surprise that you enjoyed?"
     ],
     'fear': [
-        "The person looks like he/she is scared of you, talk in a calm way",
-        "The person looks like he/she does not like you out of fear, show them you mean no harm"
+        "You seem a bit scared. Is there something that’s worrying you?",
+        "You look frightened. Is there something specific causing you fear?",
+        "I can see you’re feeling anxious. What’s on your mind?",
+        "You appear to be scared. What’s making you feel this way?"
     ],
     'angry': [
-        "The person looks like he/she is not liking how you are talking, don't antagonize them further",
-        "The person looks like he/she is very angry, fight back"
+        "You seem quite angry. What’s been bothering you?",
+        "It looks like you’re upset. Is there something you’d like to talk about?",
+        "You appear frustrated. What’s making you feel this way?",
+        "I can see you’re angry. What’s the source of your frustration?"
+    ],
+    'no_emotion': [
+        "I don’t see a clear emotion. What’s something you’re passionate about?",
+        "No specific emotion detected. What’s your favorite song?",
+        "It looks like you’re feeling neutral. What’s your favorite way to relax?",
+        "You seem calm. What did you find interesting about your day today?"
     ]
 }
 
@@ -92,7 +113,9 @@ while True:
             # Draw rectangle around the face
             cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
             cv2.putText(frame, max_emotion.capitalize(), (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
-
+    else:
+        max_emotion = 'no_emotion'
+    
     # Calculate and display FPS
     prev_time, fps = calculate_fps(prev_time)
     cv2.putText(frame, f'FPS: {int(fps)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
@@ -107,14 +130,15 @@ while True:
         if emotion_counter:
             most_common_emotion, count = emotion_counter.most_common(1)[0]
         else:
-            most_common_emotion = 'neutral'
+            most_common_emotion = 'no_emotion'
         
-        # Get conversation starter for the most frequent emotion
+        # Get random conversation starter for the most frequent emotion
         starters = conversation_starters.get(most_common_emotion, ["I see you have an emotion I don't recognize."])
+        conversation_prompt = random.choice(starters)
         
         # Print the most frequent emotion and conversation starter
         print(f"Most frequent emotion in the last 7 seconds: {most_common_emotion}")
-        print(f"Conversation starter: {starters[0]}")
+        print(f"Conversation starter: {conversation_prompt}")
 
         # Reset counters and timer
         emotion_counter.clear()
