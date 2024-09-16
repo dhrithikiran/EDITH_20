@@ -1,3 +1,4 @@
+#perfomance boost
 import cv2
 from fer import FER
 import time
